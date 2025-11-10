@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="pt-br" class="h-full bg-gray-100">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Locação</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/heroicons/2.1.1/24/solid/heroicons.min.css" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+        crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+        crossorigin=""></script>
+    <style>
+        /* Esconde todas as seções de "página" por padrão */
+        .page-section { display: none; }
+        /* Mostra a página que tiver a classe 'active' */
+        .page-section.active { display: block; }
+        /* Define uma altura fixa para o container do mapa */
+        #map { height: 400px; }
+        /* Estilo para o botão de loading da IA */
+        .loading-spinner {
+            border: 2px solid #f3f3f3; 
+            border-top: 2px solid #5a67d8;
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="h-full">
+    <div class="min-h-full">
+            <nav class="bg-gray-800">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="flex h-16 items-center justify-between">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                                <svg class="h-8 w-8 text-indigo-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M5.625 3.75a2.625 2.625 0 1 0 0 5.25h12.75a2.625 2.625 0 0 0 0-5.25H5.625ZM3.75 11.25a.75.75 0 0 0 0 1.5h16.5a.75.75 0 0 0 0-1.5H3.75Z"/>
+                                <path fill-rule="evenodd" d="M22.5 15.75A2.625 2.625 0 0 1 19.875 13.5H4.125A2.625 2.625 0 0 1 1.5 15.75v3A2.625 2.625 0 0 1 4.125 21.375h15.75A2.625 2.625 0 0 1 22.5 18.75v-3ZM21 16.5a.75.75 0 0 0-1.5 0v.75a.75.75 0 0 1-.75.75h-3a.75.75 0 0 1-.75-.75v-.75a.75.75 0 0 0-1.5 0v.75a.75.75 0 0 1-.75.75h-3a.75.75 0 0 1-.75-.75v-.75a.75.75 0 0 0-1.5 0v.75a.75.75 0 0 1-.75.75H5.25a.75.75 0 0 1-.75-.75v-.75a.75.75 0 0 0-1.5 0v.75a2.25 2.25 0 0 0 2.25 2.25h13.5a2.25 2.25 0 0 0 2.25-2.25v-.75Z" clip-rule="evenodd"/>
+                            </svg>
+                        </div>
+                        <div class="hidden md:block">
+                            <div class="ml-10 flex items-baseline space-x-4">
+                                <a href="#" id="nav-locacoes" class="nav-link bg-gray-900 text-white rounded-md px-3 py-2 text-sm font-medium" data-page="page-locacoes">Nova Locação</a>
+                                <a href="#" class="nav-link text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium" data-page="page-clientes">Clientes</a>
+                                <a href="#" class="nav-link text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium" data-page="page-veiculos">Veículos</a>
+                                <a href="#" class="nav-link text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium" data-page="page-rastreador">Rastreador</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <header class="bg-white shadow">
+            <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+                <h1 id="page-title" class="text-3xl font-bold tracking-tight text-gray-900">Nova Locação</h1>
+            </div>
+        </header>
+
+        <main>
+            <div class="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
+                
+                <section id="page-locacoes" class="page-section active">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-white p-6 rounded-lg shadow-lg">
+                            <h2 class="text-2xl font-semibold mb-4">Registrar Nova Locação</h2>
+                            <form id="form-add-locacao" class="space-y-4">
+                                <div>
+                                    <label for="locacao-cliente" class="block text-sm font-medium text-gray-700">Cliente</label>
+                                    <select id="locacao-cliente" name="id_cliente" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" required>
+                                        <option value="">Selecione um cliente...</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="locacao-veiculo" class="block text-sm font-medium text-gray-700">Veículo</label>
+                                    <select id="locacao-veiculo" name="id_veiculo" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" required>
+                                        <option value="">Selecione um veículo...</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="locacao-data" class="block text-sm font-medium text-gray-700">Data e Hora</label>
+                                    <input type="datetime-local" id="locacao-data" name="data" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
+                                </div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label for="locacao-valor" class="block text-sm font-medium text-gray-700">Valor (R$)</label>
+                                        <input type="number" step="0.01" id="locacao-valor" name="valor" placeholder="150.00" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
+                                    </div>
+                                    <div>
+                                        <label for="locacao-pagamento" class="block text-sm font-medium text-gray-700">Forma de Pagamento</label>
+                                        <select id="locacao-pagamento" name="forma_pagamento" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
+                                            <option>PIX</option>
+                                            <option>Cartão de Crédito</option>
+                                            <option>Dinheiro</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <button type="submit" class="w-full justify-center rounded-lg bg-blue-600 px-4 py-2 text-base font-semibold text-white shadow-sm hover:bg-blue-700">Salvar Locação</button>
+                            </form>
+                        </div>
+                        
+                        <div class="bg-white p-6 rounded-lg shadow-lg">
+                            <h2 class="text-2xl font-semibold mb-4">Locações Ativas</h2>
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-gray-200">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cliente</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Veículo (Placa)</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Valor</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tabela-locacoes" class="bg-white divide-y divide-gray-200">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="page-clientes" class="page-section">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="md:col-span-1 bg-white p-6 rounded-lg shadow-lg">
+                            <h2 class="text-2xl font-semibold mb-4">Adicionar Cliente</h2>
+                            <form id="form-add-cliente" class="space-y-4">
+                                <input type="hidden" name="id_cliente_edit" id="id_cliente_edit">
+                                <div>
+                                    <label for="cliente-nome" class="block text-sm font-medium text-gray-700">Nome Completo</label>
+                                    <input type="text" id="cliente-nome" name="nome" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
+                                </div>
+                                <div>
+                                    <label for="cliente-cpf" class="block text-sm font-medium text-gray-700">CPF</label>
+                                    <input type="text" id="cliente-cpf" name="cpf" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
+                                </div>
+                                <div>
+                                    <label for="cliente-cnh" class="block text-sm font-medium text-gray-700">CNH</label>
+                                    <input type="text" id="cliente-cnh" name="cnh" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                </div>
+                                <div>
+                                    <label for="cliente-telefone" class="block text-sm font-medium text-gray-700">Telefone</label>
+                                    <input type="tel" id="cliente-telefone" name="telefone" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                </div>
+                                <button type="submit" class="w-full justify-center rounded-lg bg-blue-600 px-4 py-2 text-base font-semibold text-white shadow-sm hover:bg-blue-700">Salvar Cliente</button>
+                            </form>
+                        </div>
+                        
+                        <div class="md:col-span-2 bg-white p-6 rounded-lg shadow-lg">
+                            <h2 class="text-2xl font-semibold mb-4">Clientes Cadastrados</h2>
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-gray-200">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nome</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">CPF</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Telefone</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tabela-clientes" class="bg-white divide-y divide-gray-200">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="page-veiculos" class="page-section">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="md:col-span-1 bg-white p-6 rounded-lg shadow-lg">
+                            <h2 class="text-2xl font-semibold mb-4">Adicionar Veículo</h2>
+                            <form id="form-add-veiculo" class="space-y-4">
+                                <input type="hidden" name="id_veiculo_edit" id="id_veiculo_edit">
+                                
+                                <div>
+                                    <label for="veiculo-modelo" class="block text-sm font-medium text-gray-700">Modelo</label>
+                                    <div class="flex space-x-2 mt-1">
+                                        <input type="text" id="veiculo-modelo" name="modelo" placeholder="Ex: Fiat Uno" class="block w-full rounded-md border-gray-300 shadow-sm" required>
+                                        <button type="button" id="btn-gerar-descricao" class="inline-flex justify-center items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500" title="Gerar descrição com IA">
+                                            <svg id="icon-gemini" class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10.868 2.884c.321-.772.115-1.666-.44-2.222a.47.47 0 00-.736.001l-.03.038a.468.468 0 000 .638l.001.002.029.037a.468.468 0 00.638 0l.038-.03.001-.002zM8.331 4.225a.468.468 0 01.638 0l.038.03.001.002a.468.468 0 010 .638l-.03.038-.002.001a.468.468 0 01-.638 0l-.038-.03-.001-.002a.468.468 0 010-.638l.03-.038.002-.001zM11.96 4.225a.468.468 0 00-.638 0l-.038.03-.001.002a.468.468 0 000 .638l.03.038.002.001a.468.468 0 00.638 0l.038-.03.001-.002a.468.468 0 000-.638l-.03-.038-.002-.001zM4.225 8.331a.468.468 0 000 .638l.038.03.002.001a.468.468 0 00.638 0l.038-.03.001-.002a.468.468 0 000-.638l-.03-.038-.002-.001a.468.468 0 00-.638 0l-.038.03-.001.002zM15.775 8.331a.468.468 0 010 .638l-.038.03-.002.001a.468.468 0 01-.638 0l-.038-.03-.001-.002a.468.468 0 010-.638l.03-.038.002-.001a.468.468 0 01.638 0l.038.03.001.002zM8.331 11.96a.468.468 0 000 .638l.038.03.002.001a.468.468 0 00.638 0l.038-.03.001-.002a.468.468 0 000-.638l-.03-.038-.002-.001a.468.468 0 00-.638 0l-.038.03-.001.002zM11.669 15.775a.468.468 0 01.638 0l.038.03.001.002a.468.468 0 010 .638l-.03.038-.002.001a.468.468 0 01-.638 0l-.038-.03-.001-.002a.468.468 0 010-.638l.03-.038.002-.001zM4.225 11.96a.468.468 0 01.638 0l.038.03.001.002a.468.468 0 010 .638l-.03.038-.002.001a.468.468 0 01-.638 0l-.038-.03-.001-.002a.468.468 0 010-.638l.03-.038.002-.001zM15.775 11.96a.468.468 0 000 .638l.038.03.002.001a.468.468 0 00.638 0l.038-.03.001-.002a.468.468 0 000-.638l-.03-.038-.002-.001a.468.468 0 00-.638 0l-.038.03-.001.002zM10 1.5a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5a.75.75 0 01.75-.75zM10 16.25a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5a.75.75 0 01.75-.75zM3.75 10a.75.75 0 01.75.75h1.5a.75.75 0 010 1.5h-1.5a.75.75 0 01-.75-.75zM16.25 10a.75.75 0 01.75.75h1.5a.75.75 0 010 1.5h-1.5a.75.75 0 01-.75-.75zM1.5 10a.75.75 0 01.75-.75v-1.5a.75.75 0 011.5 0v1.5a.75.75 0 01-.75.75zM18.5 10a.75.75 0 01.75-.75v-1.5a.75.75 0 011.5 0v1.5a.75.75 0 01-.75.75zM10 3.75a.75.75 0 01.75-.75h1.5a.75.75 0 010-1.5h-1.5a.75.75 0 01-.75.75zM10 18.5a.75.75 0 01.75-.75h1.5a.75.75 0 010-1.5h-1.5a.75.75 0 01-.75.75z" clip-rule="evenodd" /></svg>
+                                            <div id="icon-loading" class="loading-spinner hidden"></div>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label for="veiculo-descricao" class="block text-sm font-medium text-gray-700">Descrição (Gerada por IA)</label>
+                                    <textarea id="veiculo-descricao" name="descricao" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="Clique no ícone ao lado do modelo para gerar..."></textarea>
+                                </div>
+
+                                <div>
+                                    <label for="veiculo-placa" class="block text-sm font-medium text-gray-700">Placa</label>
+                                    <input type="text" id="veiculo-placa" name="placa" placeholder="ABC1234" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
+                                </div>
+                                <div>
+                                    <label for="veiculo-capacidade" class="block text-sm font-medium text-gray-700">Capacidade (Passageiros)</label>
+                                    <input type="number" id="veiculo-capacidade" name="capacidade" value="5" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                </div>
+                                <div>
+                                    <label for="veiculo-rastreador" class="block text-sm font-medium text-gray-700">ID do Rastreador</label>
+                                    <input type="number" id="veiculo-rastreador" name="id_rastreador" placeholder="101" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
+                                </div>
+                                <div>
+                                    <label for="veiculo-status" class="block text-sm font-medium text-gray-700">Status</label>
+                                    <select id="veiculo-status" name="status" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                                        <option>Disponível</option>
+                                        <option>Em Manutenção</option>
+                                        <option>Alugado</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="w-full justify-center rounded-lg bg-blue-600 px-4 py-2 text-base font-semibold text-white shadow-sm hover:bg-blue-700">Salvar Veículo</button>
+                            </form>
+                        </div>
+                        
+                        <div class="md:col-span-2 bg-white p-6 rounded-lg shadow-lg">
+                            <h2 class="text-2xl font-semibold mb-4">Veículos Cadastrados</h2>
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-gray-200">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Modelo e Descrição</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Placa</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tabela-veiculos" class="bg-white divide-y divide-gray-200">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="page-rastreador" class="page-section">
+                    <div class="bg-white p-6 rounded-lg shadow-lg">
+                        <h2 class="text-2xl font-semibold mb-4">Monitoramento de Veículos</h2>
+                        <div class="mb-4">
+                            <label for="rastreador-select-veiculo" class="block text-sm font-medium text-gray-700">Selecione o Veículo para Rastrear</label>
+                            <select id="rastreador-select-veiculo" class="mt-1 block w-full md:w-1/3 rounded-md border-gray-300 shadow-sm">
+                            </select>
+                        </div>
+                        
+                        <div id="map" class="w-full h-96 bg-gray-200 rounded-lg shadow-md mb-6 z-0">
+                            </div>
+
+                        <h3 class="text-xl font-semibold mt-6 mb-2">Últimas Posições</h3>
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Data/Hora</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Latitude</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Longitude</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabela-rastreador" class="bg-white divide-y divide-gray-200">
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+                
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const API_URL = "http://127.0.0.1:5000"; 
+
+        // --- Variáveis Globais do Mapa ---
+        let map;
+        let carMarker;
+
+        // --- Função de espera (para backoff da API) ---
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        // --- FUNÇÃO DA API GEMINI ---
+        async function callGemini(prompt, retries = 3, delay = 1000) {
+            // A API Key é deixada em branco; o ambiente Canvas irá fornecê-la.
+            const apiKey = ""; 
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+
+            const payload = {
+                contents: [{ parts: [{ text: prompt }] }]
+            };
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    // Implementa retentativa (exponential backoff) em caso de throttling (429)
+                    if (response.status === 429 && retries > 0) {
+                        await sleep(delay);
+                        return callGemini(prompt, retries - 1, delay * 2);
+                    }
+                    throw new Error(`Erro na API Gemini: ${response.statusText}`);
+                }
+
+                const result = await response.json();
+                const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                
+                if (!text) {
+                    throw new Error("Resposta da API inválida ou vazia.");
+                }
+                return text.trim();
+
+            } catch (error) {
+                console.error("Erro ao chamar API Gemini:", error);
+                // Retenta em erros de rede
+                if (retries > 0) {
+                    await sleep(delay);
+                    return callGemini(prompt, retries - 1, delay * 2);
+                }
+                throw error; // Falha final
+            }
+        }
+
+        // --- LÓGICA DE NAVEGAÇÃO E DADOS ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const navLinks = document.querySelectorAll('.nav-link');
+            const pageSections = document.querySelectorAll('.page-section');
+            const pageTitle = document.getElementById('page-title');
+
+            // Função para trocar de página
+            function showPage(pageId) {
+                pageSections.forEach(section => section.classList.remove('active'));
+                navLinks.forEach(link => {
+                    link.classList.remove('bg-gray-900', 'text-white');
+                    link.classList.add('text-gray-300', 'hover:bg-gray-700');
+                });
+                
+                const activePage = document.getElementById(pageId);
+                if (activePage) activePage.classList.add('active');
+                
+                const activeLink = document.querySelector(`.nav-link[data-page="${pageId}"]`);
+                if (activeLink) {
+                    activeLink.classList.add('bg-gray-900', 'text-white');
+                    activeLink.classList.remove('text-gray-300', 'hover:bg-gray-700');
+                    pageTitle.textContent = activeLink.textContent;
+                }
+
+                // Carrega os dados específicos da página
+                if (pageId === 'page-locacoes') {
+                    loadClientesDropdown();
+                    loadVeiculosDropdown();
+                    loadLocacoes();
+                }
+                if (pageId === 'page-clientes') {
+                    loadClientes();
+                }
+                if (pageId === 'page-veiculos') {
+                    loadVeiculos();
+                }
+                if (pageId === 'page-rastreador') {
+                    loadVeiculosDropdownRastreador();
+                    // Corrige o bug de renderização do mapa em aba oculta
+                    setTimeout(() => {
+                        if (map) {
+                            map.invalidateSize();
+                        }
+                    }, 10);
+                }
+            }
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const pageId = e.target.getAttribute('data-page');
+                    showPage(pageId);
+                });
+            });
+
+            // --- INICIALIZAÇÃO DO MAPA ---
+            try {
+                map = L.map('map').setView([-22.2152, -49.9442], 13); // Pompéia, SP
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                }).addTo(map);
+            } catch (e) {
+                console.error("Erro ao inicializar o mapa:", e);
+                document.getElementById('map').innerHTML = "<p class='text-red-500 p-4'>Erro ao carregar o mapa.</p>";
+            }
+
+            // --- LÓGICA DE VEÍCULOS (com Gemini) ---
+            const formVeiculo = document.getElementById('form-add-veiculo');
+            const tabelaVeiculos = document.getElementById('tabela-veiculos');
+            const btnGerarDescricao = document.getElementById('btn-gerar-descricao');
+            const inputVeiculoModelo = document.getElementById('veiculo-modelo');
+            const textareaDescricao = document.getElementById('veiculo-descricao');
+            const iconGemini = document.getElementById('icon-gemini');
+            const iconLoading = document.getElementById('icon-loading');
+
+            // Carrega Veículos na Tabela
+            async function loadVeiculos() {
+                try {
+                    const response = await fetch(`${API_URL}/api/veiculos`);
+                    if (!response.ok) throw new Error('Erro ao buscar veículos');
+                    const veiculos = await response.json();
+                    
+                    tabelaVeiculos.innerHTML = '';
+                    veiculos.forEach(v => {
+                        const tr = document.createElement('tr');
+                        // ATUALIZADO para mostrar a descrição
+                        tr.innerHTML = `
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">${v.id_veiculo}</td>
+                            <td class="px-4 py-3 text-sm text-gray-900">
+                                <div class="font-medium">${v.modelo}</div>
+                                <div class="text-gray-500 text-xs italic">${v.descricao || 'Sem descrição'}</div>
+                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">${v.placa}</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                                    v.status === 'Disponível' ? 'bg-green-100 text-green-800' : 
+                                    v.status === 'Alugado' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'
+                                }">
+                                    ${v.status}
+                                </span>
+                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm font-medium">
+                                <a href="#" class="text-indigo-600 hover:text-indigo-900" onclick="deleteVeiculo(${v.id_veiculo})">Excluir</a>
+                            </td>
+                        `;
+                        tabelaVeiculos.appendChild(tr);
+                    });
+                } catch (error) {
+                    console.error("Falha ao carregar veículos:", error);
+                    tabelaVeiculos.innerHTML = `<tr><td colspan="5" class="text-center p-4 text-red-500">Não foi possível carregar os veículos.</td></tr>`;
+                }
+            }
+
+            // Adiciona Veículo (com Descrição)
+            formVeiculo.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const formData = new FormData(formVeiculo);
+                const dados = Object.fromEntries(formData.entries());
+                
+                try {
+                    const response = await fetch(`${API_URL}/api/veiculos`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(dados) // 'dados' já inclui a 'descricao' do textarea
+                    });
+                    if (!response.ok) throw new Error('Erro ao salvar veículo');
+                    
+                    formVeiculo.reset();
+                    loadVeiculos(); 
+                } catch (error) {
+                    console.error("Falha ao salvar veículo:", error);
+                    alert("Erro ao salvar veículo. Verifique o console.");
+                }
+            });
+
+            // --- Event Listener do Botão GEMINI ---
+            btnGerarDescricao.addEventListener('click', async () => {
+                const modelo = inputVeiculoModelo.value;
+                if (!modelo) {
+                    alert("Por favor, insira um modelo de veículo primeiro.");
+                    return;
+                }
+
+                // Mostrar loading
+                iconGemini.classList.add('hidden');
+                iconLoading.classList.remove('hidden');
+                btnGerarDescricao.disabled = true;
+                textareaDescricao.value = "Gerando descrição com IA... Por favor, aguarde.";
+
+                const prompt = `Gere uma descrição de marketing curta, em português do Brasil, para um carro de locadora modelo: "${modelo}". Foque em economia, conforto e praticidade para viagens. Use no máximo 2 frases.`;
+
+                try {
+                    const descricaoGerada = await callGemini(prompt);
+                    textareaDescricao.value = descricaoGerada;
+                } catch (error) {
+                    textareaDescricao.value = "Erro ao gerar descrição. Tente novamente.";
+                    console.error(error);
+                } finally {
+                    // Esconder loading
+                    iconGemini.classList.remove('hidden');
+                    iconLoading.classList.add('hidden');
+                    btnGerarDescricao.disabled = false;
+                }
+            });
+
+            // --- LÓGICA DE CLIENTES ---
+            const formCliente = document.getElementById('form-add-cliente');
+            const tabelaClientes = document.getElementById('tabela-clientes');
+
+            async function loadClientes() {
+                try {
+                    const response = await fetch(`${API_URL}/api/clientes`);
+                    if (!response.ok) throw new Error('Erro ao buscar clientes');
+                    const clientes = await response.json();
+                    
+                    tabelaClientes.innerHTML = '';
+                    clientes.forEach(c => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">${c.id_cliente}</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">${c.nome}</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">${c.cpf}</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">${c.telefone}</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm font-medium">
+                                <a href="#" class="text-indigo-600 hover:text-indigo-900" onclick="deleteCliente(${c.id_cliente})">Excluir</a>
+                            </td>
+                        `;
+                        tabelaClientes.appendChild(tr);
+                    });
+                } catch (error) {
+                    console.error("Falha ao carregar clientes:", error);
+                    tabelaClientes.innerHTML = `<tr><td colspan="5" class="text-center p-4 text-red-500">Não foi possível carregar os clientes.</td></tr>`;
+                }
+            }
+            
+            formCliente.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const formData = new FormData(formCliente);
+                const dados = Object.fromEntries(formData.entries());
+                delete dados.id_veiculo; 
+                
+                try {
+                    const response = await fetch(`${API_URL}/api/clientes`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(dados)
+                    });
+                    if (!response.ok) throw new Error('Erro ao salvar cliente');
+                    formCliente.reset();
+                    loadClientes();
+                } catch (error) {
+                    console.error("Falha ao salvar cliente:", error);
+                    alert("Erro ao salvar cliente. Verifique o console.");
+                }
+            });
+
+            // --- LÓGICA DE LOCAÇÕES ---
+            const formLocacao = document.getElementById('form-add-locacao');
+            const tabelaLocacoes = document.getElementById('tabela-locacoes');
+            const selectCliente = document.getElementById('locacao-cliente');
+            const selectVeiculo = document.getElementById('locacao-veiculo');
+            
+            async function loadClientesDropdown() {
+                try {
+                    const response = await fetch(`${API_URL}/api/clientes`);
+                    const clientes = await response.json();
+                    selectCliente.innerHTML = '<option value="">Selecione um cliente...</option>';
+                    clientes.forEach(c => {
+                        selectCliente.add(new Option(`${c.nome} (CPF: ${c.cpf})`, c.id_cliente));
+                    });
+                } catch (error) {
+                    console.error("Falha ao carregar dropdown de clientes:", error);
+                }
+            }
+            
+            async function loadVeiculosDropdown() {
+                 try {
+                    const response = await fetch(`${API_URL}/api/veiculos?status=Disponível`);
+                    const veiculos = await response.json();
+                    selectVeiculo.innerHTML = '<option value="">Selecione um veículo...</option>';
+                    veiculos.forEach(v => {
+                        selectVeiculo.add(new Option(`${v.modelo} (Placa: ${v.placa})`, v.id_veiculo));
+                    });
+                } catch (error) {
+                    console.error("Falha ao carregar dropdown de veículos:", error);
+                }
+            }
+
+            formLocacao.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const formData = new FormData(formLocacao);
+                const dados = Object.fromEntries(formData.entries());
+
+                try {
+                    const response = await fetch(`${API_URL}/api/locacoes`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(dados)
+                    });
+                    if (!response.ok) throw new Error('Erro ao salvar locação');
+                    
+                    await fetch(`${API_URL}/api/veiculos/${dados.id_veiculo}/status`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ status: 'Alugado' })
+                    });
+
+                    formLocacao.reset();
+                    loadLocacoes();
+                    loadVeiculosDropdown(); 
+                } catch (error) {
+                    console.error("Falha ao criar locação:", error);
+                    alert("Erro ao criar locação. Verifique o console.");
+                }
+            });
+
+            async function loadLocacoes() {
+                try {
+                    const response = await fetch(`${API_URL}/api/locacoes`);
+                    if (!response.ok) throw new Error('Erro ao buscar locações');
+                    const locacoes = await response.json();
+                    
+                    tabelaLocacoes.innerHTML = '';
+                    locacoes.forEach(loc => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">${loc.cliente_nome || 'N/A'}</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">${loc.veiculo_placa || 'N/A'}</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">R$ ${loc.valor.toFixed(2)}</td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm font-medium">
+                                <a href="#" class="text-red-600 hover:text-red-900" onclick="finalizarLocacao(${loc.id_locacao}, ${loc.id_veiculo})">Finalizar</a>
+                            </td>
+                        `;
+                        tabelaLocacoes.appendChild(tr);
+                    });
+                } catch (error) {
+                    console.error("Falha ao carregar locações:", error);
+                    tabelaLocacoes.innerHTML = `<tr><td colspan="4" class="text-center p-4 text-red-500">Não foi possível carregar as locações.</td></tr>`;
+                }
+            }
+
+            // --- FUNÇÕES GLOBAIS DE AÇÕES ---
+            window.deleteCliente = async (idCliente) => {
+                if (!confirm(`Tem certeza que deseja excluir o cliente ID ${idCliente}?`)) return;
+                try {
+                    await fetch(`${API_URL}/api/clientes/${idCliente}`, { method: 'DELETE' });
+                    loadClientes();
+                } catch (error) {
+                    console.error("Erro ao excluir cliente:", error);
+                }
+            };
+            window.deleteVeiculo = async (idVeiculo) => {
+                if (!confirm(`Tem certeza que deseja excluir o veículo ID ${idVeiculo}?`)) return;
+                try {
+                    await fetch(`${API_URL}/api/veiculos/${idVeiculo}`, { method: 'DELETE' });
+                    loadVeiculos();
+                } catch (error) {
+                    console.error("Erro ao excluir veículo:", error);
+                }
+            };
+            window.finalizarLocacao = async (idLocacao, idVeiculo) => {
+                if (!confirm(`Tem certeza que deseja finalizar a locação ID ${idLocacao}?`)) return;
+                try {
+                    await fetch(`${API_URL}/api/locacoes/${idLocacao}`, { method: 'DELETE' });
+                    await fetch(`${API_URL}/api/veiculos/${idVeiculo}/status`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ status: 'Disponível' })
+                    });
+                    loadLocacoes();
+                    loadVeiculosDropdown();
+                } catch (error) {
+                    console.error("Erro ao finalizar locação:", error);
+                }
+            };
+            
+            // --- LÓGICA DO RASTREADOR (COM MAPA) ---
+            const selectVeiculoRastreador = document.getElementById('rastreador-select-veiculo');
+            const tabelaRastreador = document.getElementById('tabela-rastreador');
+
+            async function loadVeiculosDropdownRastreador() {
+                try {
+                    const response = await fetch(`${API_URL}/api/veiculos`);
+                    const veiculos = await response.json();
+                    selectVeiculoRastreador.innerHTML = '<option value="">Selecione um veículo...</option>';
+                    veiculos.forEach(v => {
+                        // Mostra o ID do Rastreador no dropdown para facilitar o teste
+                        selectVeiculoRastreador.add(new Option(`${v.modelo} (Placa: ${v.placa} / ID Rast.: ${v.id_rastreador || 'N/A'})`, v.id_veiculo));
+                    });
+                } catch (error) {
+                    console.error("Falha ao carregar dropdown de veículos rastreador:", error);
+                }
+            }
+
+            // **********************************
+            //           AQUI ESTÁ A CORREÇÃO
+            // **********************************
+            // A variável 'selectVeiculoRastreador' é a correta.
+            selectVeiculoRastreador.addEventListener('change', async () => {
+                const idVeiculoSelecionado = selectVeiculoRastreador.value;
+                tabelaRastreador.innerHTML = ''; 
+                
+                if (carMarker) {
+                    map.removeLayer(carMarker);
+                    carMarker = null;
+                }
+                if (!idVeiculoSelecionado) return;
+                
+                try {
+                    // Re-busca os veículos para encontrar o ID do rastreador
+                    const responseVeiculo = await fetch(`${API_URL}/api/veiculos`); 
+                    const veiculos = await responseVeiculo.json();
+                    // .find() precisa de conversão de tipo (value é string, id é número)
+                    const veiculo = veiculos.find(v => v.id_veiculo == idVeiculoSelecionado);
+
+                    if (veiculo && veiculo.id_rastreador) {
+                        loadPosicoes(veiculo.id_rastreador);
+                    } else {
+                        tabelaRastreador.innerHTML = `<tr><td colspan="3" class="text-center p-4">Este veículo não possui um rastreador cadastrado.</td></tr>`;
+                    }
+                } catch (error) {
+                        console.error("Erro ao buscar dados do veículo:", error);
+                        tabelaRastreador.innerHTML = `<tr><td colspan="3" class="text-center p-4 text-red-500">Erro ao buscar dados.</td></tr>`;
+                }
+            });
+
+            async function loadPosicoes(id_rastreador) {
+                try {
+                    const response = await fetch(`${API_URL}/api/rastreador/${id_rastreador}`);
+                    if (!response.ok) throw new Error('Erro ao buscar posições');
+                    
+                    const posicoes = await response.json();
+                    tabelaRastreador.innerHTML = '';
+
+                    if (carMarker) {
+                        map.removeLayer(carMarker);
+                    }
+
+                    if (posicoes.length === 0) {
+                        tabelaRastreador.innerHTML = `<tr><td colspan="3" class="text-center p-4">Nenhuma posição registrada para este rastreador.</td></tr>`;
+                        return;
+                    }
+
+                    const ultimaPosicao = posicoes[0];
+                    const lat = ultimaPosicao.latitude;
+                    const lon = ultimaPosicao.longitude;
+                    
+                    carMarker = L.marker([lat, lon]).addTo(map)
+                        .bindPopup(`<b>Última Posição</b><br>${new Date(ultimaPosicao.data_hora).toLocaleString('pt-BR')}`)
+                        .openPopup();
+                    
+                    map.setView([lat, lon], 15);
+                    
+                    posicoes.forEach(p => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td class="px-4 py-3 text-sm text-gray-900">${new Date(p.data_hora).toLocaleString('pt-BR')}</td>
+                            <td class="px-4 py-3 text-sm text-gray-900">${p.latitude}</td>
+                            <td class="px-4 py-3 text-sm text-gray-900">${p.longitude}</td>
+                        `;
+                        tabelaRastreador.appendChild(tr);
+                    });
+
+                } catch (error) {
+                    console.error("Falha ao carregar posições:", error);
+                    tabelaRastreador.innerHTML = `<tr><td colspan="3" class="text-center p-4 text-red-500">Não foi possível carregar as posições.</td></tr>`;
+                }
+            }
+            
+            // Inicia na página de locações
+            showPage('page-locacoes');
+
+        }); // Fim do DOMContentLoaded
+    </script>
+</body>
+</html>
