@@ -1,4 +1,4 @@
-# Trabalho-BancoDeDados
+# LocaSmart
 
 # 🚗 Sistema de Locação de Veículos (Flask + IA + Rastreamento GPS)
 
@@ -15,7 +15,7 @@ O projeto se destaca por duas funcionalidades avançadas:
 * **Registro de Locações:** Permite registrar uma nova locação, vinculando um cliente a um veículo "Disponível" e alterando seu status para "Alugado".
 * **Geração de Conteúdo por IA:** Um botão no formulário de veículos consome a **API Gemini 1.5 Flash** para criar uma descrição de marketing curta e atrativa para o modelo do carro.
 * **Rastreamento GPS em Tempo Real:** Uma aba "Rastreador" exibe um mapa interativo (com Leaflet.js) que mostra a última localização de qualquer veículo selecionado no dropdown.
-* **Simulador de Frota (Multi-Veículos):** Um script (`simulador.py`) que busca *toda* a frota de veículos na API e, em paralelo, envia novas coordenadas GPS para cada um deles, permitindo o monitoramento de múltiplos carros ao mesmo tempo.
+* **Simulador de Frota (Fase experimental), (Multi-Veículos):** Um script (`simulador.py`) que busca *toda* a frota de veículos na API e, em paralelo, envia novas coordenadas GPS para cada um deles, permitindo o monitoramento de múltiplos carros ao mesmo tempo.
 
 ## 🛠️ Tecnologias Utilizadas
 
