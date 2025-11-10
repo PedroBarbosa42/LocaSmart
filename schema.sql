@@ -1,9 +1,3 @@
--- Remove tabelas antigas se existirem, para podermos rodar este script várias vezes
-DROP TABLE IF EXISTS Posicoes;
-DROP TABLE IF EXISTS Locacao;
-DROP TABLE IF EXISTS Cliente;
-DROP TABLE IF EXISTS Veiculo;
-
 CREATE TABLE Veiculo (
     id_veiculo INTEGER PRIMARY KEY AUTOINCREMENT,
     modelo VARCHAR(50) NOT NULL,

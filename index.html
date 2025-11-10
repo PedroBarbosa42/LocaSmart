@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Locação</title>
+    <title>FrotaSys - Sistema de Locação</title>
         <script src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdnjs.cloudflare.com/ajax/libs/heroicons/2.1.1/24/solid/heroicons.min.css" rel="stylesheet">
     
@@ -184,17 +184,19 @@
                                 
                                 <div>
                                     <label for="veiculo-modelo" class="block text-sm font-medium text-gray-700">Modelo</label>
-                                    <div class="flex space-x-2 mt-1">
-                                        <input type="text" id="veiculo-modelo" name="modelo" placeholder="Ex: Fiat Uno" class="block w-full rounded-md border-gray-300 shadow-sm" required>
-                                        <button type="button" id="btn-gerar-descricao" class="inline-flex justify-center items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500" title="Gerar descrição com IA">
-                                            <svg id="icon-gemini" class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10.868 2.884c.321-.772.115-1.666-.44-2.222a.47.47 0 00-.736.001l-.03.038a.468.468 0 000 .638l.001.002.029.037a.468.468 0 00.638 0l.038-.03.001-.002zM8.331 4.225a.468.468 0 01.638 0l.038.03.001.002a.468.468 0 010 .638l-.03.038-.002.001a.468.468 0 01-.638 0l-.038-.03-.001-.002a.468.468 0 010-.638l.03-.038.002-.001zM11.96 4.225a.468.468 0 00-.638 0l-.038.03-.001.002a.468.468 0 000 .638l.03.038.002.001a.468.468 0 00.638 0l.038-.03.001-.002a.468.468 0 000-.638l-.03-.038-.002-.001zM4.225 8.331a.468.468 0 000 .638l.038.03.002.001a.468.468 0 00.638 0l.038-.03.001-.002a.468.468 0 000-.638l-.03-.038-.002-.001a.468.468 0 00-.638 0l-.038.03-.001.002zM15.775 8.331a.468.468 0 010 .638l-.038.03-.002.001a.468.468 0 01-.638 0l-.038-.03-.001-.002a.468.468 0 010-.638l.03-.038.002-.001a.468.468 0 01.638 0l.038.03.001.002zM8.331 11.96a.468.468 0 000 .638l.038.03.002.001a.468.468 0 00.638 0l.038-.03.001-.002a.468.468 0 000-.638l-.03-.038-.002-.001a.468.468 0 00-.638 0l-.038.03-.001.002zM11.669 15.775a.468.468 0 01.638 0l.038.03.001.002a.468.468 0 010 .638l-.03.038-.002.001a.468.468 0 01-.638 0l-.038-.03-.001-.002a.468.468 0 010-.638l.03-.038.002-.001zM4.225 11.96a.468.468 0 01.638 0l.038.03.001.002a.468.468 0 010 .638l-.03.038-.002.001a.468.468 0 01-.638 0l-.038-.03-.001-.002a.468.468 0 010-.638l.03-.038.002-.001zM15.775 11.96a.468.468 0 000 .638l.038.03.002.001a.468.468 0 00.638 0l.038-.03.001-.002a.468.468 0 000-.638l-.03-.038-.002-.001a.468.468 0 00-.638 0l-.038.03-.001.002zM10 1.5a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5a.75.75 0 01.75-.75zM10 16.25a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5a.75.75 0 01.75-.75zM3.75 10a.75.75 0 01.75.75h1.5a.75.75 0 010 1.5h-1.5a.75.75 0 01-.75-.75zM16.25 10a.75.75 0 01.75.75h1.5a.75.75 0 010 1.5h-1.5a.75.75 0 01-.75-.75zM1.5 10a.75.75 0 01.75-.75v-1.5a.75.75 0 011.5 0v1.5a.75.75 0 01-.75.75zM18.5 10a.75.75 0 01.75-.75v-1.5a.75.75 0 011.5 0v1.5a.75.75 0 01-.75.75zM10 3.75a.75.75 0 01.75-.75h1.5a.75.75 0 010-1.5h-1.5a.75.75 0 01-.75.75zM10 18.5a.75.75 0 01.75-.75h1.5a.75.75 0 010-1.5h-1.5a.75.75 0 01-.75.75z" clip-rule="evenodd" /></svg>
-                                            <div id="icon-loading" class="loading-spinner hidden"></div>
-                                        </button>
-                                    </div>
+                                    <input type="text" id="veiculo-modelo" name="modelo" placeholder="Ex: Fiat Uno" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
+                                </div>
+
+                                <div class="my-3">
+                                    <button type="button" id="btn-gerar-descricao" class="w-full inline-flex justify-center items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 disabled:opacity-50">
+                                        <svg id="icon-gemini" class="h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10.868 2.884c.321-.772.115-1.666-.44-2.222a.47.47 0 00-.736.001l-.03.038a.468.468 0 000 .638l.001.002.029.037a.468.468 0 00.638 0l.038-.03.001-.002zM8.331 4.225a.468.468 0 01.638 0l.038.03.001.002a.468.468 0 010 .638l-.03.038-.002.001a.468.468 0 01-.638 0l-.038-.03-.001-.002a.468.468 0 010-.638l.03-.038.002-.001zM11.96 4.225a.468.468 0 00-.638 0l-.038.03-.001.002a.468.468 0 000 .638l.03.038.002.001a.468.468 0 00.638 0l.038-.03.001-.002a.468.468 0 000-.638l-.03-.038-.002-.001zM4.225 8.331a.468.468 0 000 .638l.038.03.002.001a.468.468 0 00.638 0l.038-.03.001-.002a.468.468 0 000-.638l-.03-.038-.002-.001a.468.468 0 00-.638 0l-.038.03-.001.002zM15.775 8.331a.468.468 0 010 .638l-.038.03-.002.001a.468.468 0 01-.638 0l-.038-.03-.001-.002a.468.468 0 010-.638l.03-.038.002-.001a.468.468 0 01.638 0l.038.03.001.002zM8.331 11.96a.468.468 0 000 .638l.038.03.002.001a.468.468 0 00.638 0l.038-.03.001-.002a.468.468 0 000-.638l-.03-.038-.002-.001a.468.468 0 00-.638 0l-.038.03-.001.002zM11.669 15.775a.468.468 0 01.638 0l.038.03.001.002a.468.468 0 010 .638l-.03.038-.002.001a.468.468 0 01-.638 0l-.038-.03-.001-.002a.468.468 0 010-.638l.03-.038.002-.001zM4.225 11.96a.468.468 0 01.638 0l.038.03.001.002a.468.468 0 010 .638l-.03.038-.002.001a.468.468 0 01-.638 0l-.038-.03-.001-.002a.468.468 0 010-.638l.03-.038.002-.001zM15.775 11.96a.468.468 0 000 .638l.038.03.002.001a.468.468 0 00.638 0l.038-.03.001-.002a.468.468 0 000-.638l-.03-.038-.002-.001a.468.468 0 00-.638 0l-.038.03-.001.002zM10 1.5a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5a.75.75 0 01.75-.75zM10 16.25a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5a.75.75 0 01.75-.75zM3.75 10a.75.75 0 01.75.75h1.5a.75.75 0 010 1.5h-1.5a.75.75 0 01-.75-.75zM16.25 10a.75.75 0 01.75.75h1.5a.75.75 0 010 1.5h-1.5a.75.75 0 01-.75-.75zM1.5 10a.75.75 0 01.75-.75v-1.5a.75.75 0 011.5 0v1.5a.75.75 0 01-.75.75zM18.5 10a.75.75 0 01.75-.75v-1.5a.75.75 0 011.5 0v1.5a.75.75 0 01-.75.75zM10 3.75a.75.75 0 01.75-.75h1.5a.75.75 0 010-1.5h-1.5a.75.75 0 01-.75.75zM10 18.5a.75.75 0 01.75-.75h1.5a.75.75 0 010-1.5h-1.5a.75.75 0 01-.75.75z" clip-rule="evenodd" /></svg>
+                                        <div id="icon-loading" class="loading-spinner mr-2 hidden"></div>
+                                        <span id="btn-ia-text">Gerar Descrição com IA</span>
+                                    </button>
                                 </div>
                                 <div>
                                     <label for="veiculo-descricao" class="block text-sm font-medium text-gray-700">Descrição (Gerada por IA)</label>
-                                    <textarea id="veiculo-descricao" name="descricao" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="Clique no ícone ao lado do modelo para gerar..."></textarea>
+                                    <textarea id="veiculo-descricao" name="descricao" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="Clique no botão acima para gerar..."></textarea>
                                 </div>
 
                                 <div>
@@ -287,10 +289,22 @@
 
         // --- FUNÇÃO DA API GEMINI ---
         async function callGemini(prompt, retries = 3, delay = 1000) {
-            // A API Key é deixada em branco; o ambiente Canvas irá fornecê-la.
-            const apiKey = ""; 
+            
+            // ******************************************************
+            // IMPORTANTE: COLOQUE SUA CHAVE DE API DO GOOGLE AI STUDIO AQUI
+            // ******************************************************
+            const apiKey = "SUA_CHAVE_DE_API_VAI_AQUI"; // <--- EDITE AQUI
+            
+            
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 
+            // Verificação de segurança: Não continue se a chave não foi alterada
+            if (apiKey === "SUA_CHAVE_DE_API_VAI_AQUI") {
+                console.error("ERRO: A Chave de API (apiKey) da Gemini não foi definida.");
+                alert("ERRO: Você precisa adicionar sua Chave de API da Gemini no arquivo index.html (linha 329) para a IA funcionar.");
+                throw new Error("API Key não definida.");
+            }
+            
             const payload = {
                 contents: [{ parts: [{ text: prompt }] }]
             };
@@ -303,12 +317,11 @@
                 });
 
                 if (!response.ok) {
-                    // Implementa retentativa (exponential backoff) em caso de throttling (429)
                     if (response.status === 429 && retries > 0) {
                         await sleep(delay);
                         return callGemini(prompt, retries - 1, delay * 2);
                     }
-                    throw new Error(`Erro na API Gemini: ${response.statusText}`);
+                    throw new Error(`Erro na API Gemini: ${response.status} ${response.statusText}`);
                 }
 
                 const result = await response.json();
@@ -321,12 +334,11 @@
 
             } catch (error) {
                 console.error("Erro ao chamar API Gemini:", error);
-                // Retenta em erros de rede
                 if (retries > 0) {
                     await sleep(delay);
                     return callGemini(prompt, retries - 1, delay * 2);
                 }
-                throw error; // Falha final
+                throw error; 
             }
         }
 
@@ -404,6 +416,7 @@
             const textareaDescricao = document.getElementById('veiculo-descricao');
             const iconGemini = document.getElementById('icon-gemini');
             const iconLoading = document.getElementById('icon-loading');
+            const btnIaText = document.getElementById('btn-ia-text'); // Span de texto do botão
 
             // Carrega Veículos na Tabela
             async function loadVeiculos() {
@@ -415,7 +428,6 @@
                     tabelaVeiculos.innerHTML = '';
                     veiculos.forEach(v => {
                         const tr = document.createElement('tr');
-                        // ATUALIZADO para mostrar a descrição
                         tr.innerHTML = `
                             <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">${v.id_veiculo}</td>
                             <td class="px-4 py-3 text-sm text-gray-900">
@@ -465,7 +477,7 @@
                 }
             });
 
-            // --- Event Listener do Botão GEMINI ---
+            // --- Event Listener do Botão GEMINI (Corrigido) ---
             btnGerarDescricao.addEventListener('click', async () => {
                 const modelo = inputVeiculoModelo.value;
                 if (!modelo) {
@@ -477,7 +489,8 @@
                 iconGemini.classList.add('hidden');
                 iconLoading.classList.remove('hidden');
                 btnGerarDescricao.disabled = true;
-                textareaDescricao.value = "Gerando descrição com IA... Por favor, aguarde.";
+                btnIaText.textContent = "Gerando..."; // Muda o texto
+                textareaDescricao.value = "Gerando descrição com IA... Por favor, aguarde. Isso pode levar alguns segundos.";
 
                 const prompt = `Gere uma descrição de marketing curta, em português do Brasil, para um carro de locadora modelo: "${modelo}". Foque em economia, conforto e praticidade para viagens. Use no máximo 2 frases.`;
 
@@ -485,13 +498,14 @@
                     const descricaoGerada = await callGemini(prompt);
                     textareaDescricao.value = descricaoGerada;
                 } catch (error) {
-                    textareaDescricao.value = "Erro ao gerar descrição. Tente novamente.";
+                    textareaDescricao.value = "Erro ao gerar descrição. Verifique sua chave de API e conexão com a internet.";
                     console.error(error);
                 } finally {
                     // Esconder loading
                     iconGemini.classList.remove('hidden');
                     iconLoading.classList.add('hidden');
                     btnGerarDescricao.disabled = false;
+                    btnIaText.textContent = "Gerar Descrição com IA"; // Restaura o texto
                 }
             });
 
@@ -676,18 +690,14 @@
                     const veiculos = await response.json();
                     selectVeiculoRastreador.innerHTML = '<option value="">Selecione um veículo...</option>';
                     veiculos.forEach(v => {
-                        // Mostra o ID do Rastreador no dropdown para facilitar o teste
-                        selectVeiculoRastreador.add(new Option(`${v.modelo} (Placa: ${v.placa} / ID Rast.: ${v.id_rastreador || 'N/A'})`, v.id_veiculo));
+                        selectVeiculoRastreador.add(new Option(`${v.modelo} (ID Rast.: ${v.id_rastreador || 'N/A'})`, v.id_veiculo));
                     });
                 } catch (error) {
                     console.error("Falha ao carregar dropdown de veículos rastreador:", error);
                 }
             }
 
-            // **********************************
-            //           AQUI ESTÁ A CORREÇÃO
-            // **********************************
-            // A variável 'selectVeiculoRastreador' é a correta.
+            // Event Listener Corrigido (usando 'selectVeiculoRastreador')
             selectVeiculoRastreador.addEventListener('change', async () => {
                 const idVeiculoSelecionado = selectVeiculoRastreador.value;
                 tabelaRastreador.innerHTML = ''; 
@@ -699,10 +709,8 @@
                 if (!idVeiculoSelecionado) return;
                 
                 try {
-                    // Re-busca os veículos para encontrar o ID do rastreador
                     const responseVeiculo = await fetch(`${API_URL}/api/veiculos`); 
                     const veiculos = await responseVeiculo.json();
-                    // .find() precisa de conversão de tipo (value é string, id é número)
                     const veiculo = veiculos.find(v => v.id_veiculo == idVeiculoSelecionado);
 
                     if (veiculo && veiculo.id_rastreador) {
@@ -712,7 +720,7 @@
                     }
                 } catch (error) {
                         console.error("Erro ao buscar dados do veículo:", error);
-                        tabelaRastreador.innerHTML = `<tr><td colspan="3" class="text-center p-4 text-red-500">Erro ao buscar dados.</td></tr>`;
+                        tabelaRastreador.innerHTML = `<tr><td colspan"3" class="text-center p-4 text-red-500">Erro ao buscar dados.</td></tr>`;
                 }
             });
 

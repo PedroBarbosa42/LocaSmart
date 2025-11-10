@@ -7,7 +7,6 @@ API_URL_VEICULOS = "http://127.0.0.1:5000/api/veiculos"
 API_URL_RASTREADOR = "http://127.0.0.1:5000/api/rastreador"
 
 # Dicionário para guardar a última posição de CADA carro
-# O formato será: { id_rastreador: {"lat": float, "lon": float} }
 posicoes_carros = {}
 
 # Coordenadas base para espalhar os carros
@@ -31,8 +30,6 @@ def atualizar_lista_de_carros():
         for veiculo in veiculos:
             id_rastreador = veiculo.get('id_rastreador')
             
-            # Se o carro tem um rastreador E AINDA NÃO está na nossa lista,
-            # adicionamos ele com uma posição inicial aleatória.
             if id_rastreador and id_rastreador not in posicoes_carros:
                 pos_inicial = {
                     "lat": LAT_INICIAL_BASE + random.uniform(-0.01, 0.01), # Espalha os carros
@@ -63,7 +60,6 @@ while True:
         print(f"\n--- Atualizando {len(posicoes_carros)} carro(s) ---")
         
         # 2. Itera por CADA carro e simula o movimento
-        # Usamos list() para poder modificar o dicionário se necessário (embora não neste loop)
         for id_rastreador, pos in list(posicoes_carros.items()):
             
             # Simula o carro se movendo um pouquinho

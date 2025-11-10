@@ -53,12 +53,11 @@ def get_veiculos():
 
 @app.route('/api/veiculos', methods=['POST'])
 def add_veiculo():
-    """ Adiciona um novo veículo (AGORA COM DESCRIÇÃO) """
+    """ Adiciona um novo veículo (com 'descricao') """
     dados = request.json
     try:
         conn = get_db()
         conn.execute(
-            # ATUALIZADO para incluir 'descricao'
             "INSERT INTO Veiculo (modelo, placa, capacidade, status, id_rastreador, descricao) VALUES (?, ?, ?, ?, ?, ?)",
             (
                 dados['modelo'], 
@@ -66,7 +65,7 @@ def add_veiculo():
                 dados.get('capacidade'), 
                 dados['status'], 
                 dados.get('id_rastreador'),
-                dados.get('descricao') # NOVO CAMPO
+                dados.get('descricao') # Campo da IA
             )
         )
         conn.commit()
@@ -134,7 +133,6 @@ def delete_cliente(id_cliente):
 def get_locacoes():
     """Busca todas as locações ativas (com JOIN para nome e placa)."""
     conn = get_db()
-    # Este é o JOIN que seu front-end precisa
     query = """
         SELECT 
             loc.id_locacao, loc.valor, loc.id_veiculo,
@@ -187,11 +185,10 @@ def get_posicoes(id_rastreador):
 @app.route('/api/rastreador', methods=['POST'])
 def add_posicao():
     """Recebe e salva uma nova posição de um rastreador."""
-    dados = request.json  # Espera um JSON como: { "id_rastreador": 101, "lat": -22.123, "lon": -49.456 }
+    dados = request.json 
     
     try:
         conn = get_db()
-        # Insere a nova posição usando a data/hora atual do servidor
         conn.execute(
             "INSERT INTO Posicoes (id_rastreador, latitude, longitude, data_hora) VALUES (?, ?, ?, datetime('now', 'localtime'))",
             (dados['id_rastreador'], dados['lat'], dados['lon'])
@@ -199,17 +196,15 @@ def add_posicao():
         conn.commit()
         return jsonify({"mensagem": "Posição recebida com sucesso!"}), 201
     except Exception as e:
-        print(f"Erro ao inserir posição: {e}") # Imprime o erro no terminal do Flask
+        print(f"Erro ao inserir posição: {e}") 
         return jsonify({"erro": str(e)}), 500
 
 
 # --- Ponto de Partida ---
 if __name__ == '__main__':
-    # Cria o banco de dados se ele não existir ao iniciar
-    # (O arquivo locadora.db será criado)
     try:
         init_db()
     except Exception as e:
         print(f"Banco de dados 'locadora.db' já existe ou falhou ao criar: {e}")
         
-    app.run(debug=True, port=5000) # Roda na porta 5000
+    app.run(debug=True, port=5000)
