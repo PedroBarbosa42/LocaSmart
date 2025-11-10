@@ -187,8 +187,7 @@
                                     <input type="text" id="veiculo-modelo" name="modelo" placeholder="Ex: Fiat Uno" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
                                 </div>
 
-                                <div class="my-3">
-                                    <button type="button" id="btn-gerar-descricao" class="w-full inline-flex justify-center items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 disabled:opacity-50">
+                                <div class="my-3"> <button type="button" id="btn-gerar-descricao" class="w-full inline-flex justify-center items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 disabled:opacity-50">
                                         <svg id="icon-gemini" class="h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10.868 2.884c.321-.772.115-1.666-.44-2.222a.47.47 0 00-.736.001l-.03.038a.468.468 0 000 .638l.001.002.029.037a.468.468 0 00.638 0l.038-.03.001-.002zM8.331 4.225a.468.468 0 01.638 0l.038.03.001.002a.468.468 0 010 .638l-.03.038-.002.001a.468.468 0 01-.638 0l-.038-.03-.001-.002a.468.468 0 010-.638l.03-.038.002-.001zM11.96 4.225a.468.468 0 00-.638 0l-.038.03-.001.002a.468.468 0 000 .638l.03.038.002.001a.468.468 0 00.638 0l.038-.03.001-.002a.468.468 0 000-.638l-.03-.038-.002-.001zM4.225 8.331a.468.468 0 000 .638l.038.03.002.001a.468.468 0 00.638 0l.038-.03.001-.002a.468.468 0 000-.638l-.03-.038-.002-.001a.468.468 0 00-.638 0l-.038.03-.001.002zM15.775 8.331a.468.468 0 010 .638l-.038.03-.002.001a.468.468 0 01-.638 0l-.038-.03-.001-.002a.468.468 0 010-.638l.03-.038.002-.001a.468.468 0 01.638 0l.038.03.001.002zM8.331 11.96a.468.468 0 000 .638l.038.03.002.001a.468.468 0 00.638 0l.038-.03.001-.002a.468.468 0 000-.638l-.03-.038-.002-.001a.468.468 0 00-.638 0l-.038.03-.001.002zM11.669 15.775a.468.468 0 01.638 0l.038.03.001.002a.468.468 0 010 .638l-.03.038-.002.001a.468.468 0 01-.638 0l-.038-.03-.001-.002a.468.468 0 010-.638l.03-.038.002-.001zM4.225 11.96a.468.468 0 01.638 0l.038.03.001.002a.468.468 0 010 .638l-.03.038-.002.001a.468.468 0 01-.638 0l-.038-.03-.001-.002a.468.468 0 010-.638l.03-.038.002-.001zM15.775 11.96a.468.468 0 000 .638l.038.03.002.001a.468.468 0 00.638 0l.038-.03.001-.002a.468.468 0 000-.638l-.03-.038-.002-.001a.468.468 0 00-.638 0l-.038.03-.001.002zM10 1.5a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5a.75.75 0 01.75-.75zM10 16.25a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5a.75.75 0 01.75-.75zM3.75 10a.75.75 0 01.75.75h1.5a.75.75 0 010 1.5h-1.5a.75.75 0 01-.75-.75zM16.25 10a.75.75 0 01.75.75h1.5a.75.75 0 010 1.5h-1.5a.75.75 0 01-.75-.75zM1.5 10a.75.75 0 01.75-.75v-1.5a.75.75 0 011.5 0v1.5a.75.75 0 01-.75.75zM18.5 10a.75.75 0 01.75-.75v-1.5a.75.75 0 011.5 0v1.5a.75.75 0 01-.75.75zM10 3.75a.75.75 0 01.75-.75h1.5a.75.75 0 010-1.5h-1.5a.75.75 0 01-.75.75zM10 18.5a.75.75 0 01.75-.75h1.5a.75.75 0 010-1.5h-1.5a.75.75 0 01-.75.75z" clip-rule="evenodd" /></svg>
                                         <div id="icon-loading" class="loading-spinner mr-2 hidden"></div>
                                         <span id="btn-ia-text">Gerar Descrição com IA</span>
@@ -293,13 +292,13 @@
             // ******************************************************
             // IMPORTANTE: COLOQUE SUA CHAVE DE API DO GOOGLE AI STUDIO AQUI
             // ******************************************************
-            const apiKey = "SUA_CHAVE_DE_API_VAI_AQUI"; // <--- EDITE AQUI
+            const apiKey = "AIzaSyDHtYZxzY3VDpWMczDzrX0bbx0C5Gxe1uc"; // <--- EDITE AQUI
             
             
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 
             // Verificação de segurança: Não continue se a chave não foi alterada
-            if (apiKey === "SUA_CHAVE_DE_API_VAI_AQUI") {
+            if (apiKey === "AIzaSyDHtYZxzY3VDpWMczDzrX0bbx0C5Gxe1uc") {
                 console.error("ERRO: A Chave de API (apiKey) da Gemini não foi definida.");
                 alert("ERRO: Você precisa adicionar sua Chave de API da Gemini no arquivo index.html (linha 329) para a IA funcionar.");
                 throw new Error("API Key não definida.");
