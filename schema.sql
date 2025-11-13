@@ -5,7 +5,7 @@ CREATE TABLE Veiculo (
     capacidade INT,
     status VARCHAR(100) NOT NULL DEFAULT 'Disponível',
     id_rastreador INT UNIQUE,
-    descricao TEXT -- NOVA COLUNA PARA A DESCRIÇÃO DA IA
+    descricao VARCHAR(255)
 );
 
 CREATE TABLE Cliente (

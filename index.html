@@ -14,14 +14,10 @@
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
         crossorigin=""></script>
     <style>
-        /* Esconde todas as seções de "página" por padrão */
         .page-section { display: none; }
-        /* Mostra a página que tiver a classe 'active' */
         .page-section.active { display: block; }
-        /* Define uma altura fixa para o container do mapa */
         #map { height: 400px; }
         
-        /* O spinner não é mais usado, mas não atrapalha */
         .loading-spinner {
             border: 2px solid #f3f3f3; 
             border-top: 2px solid #5a67d8;
@@ -274,20 +270,14 @@
     <script>
         const API_URL = "http://127.0.0.1:5000"; 
 
-        // --- Variáveis Globais do Mapa ---
         let map;
         let carMarker;
 
-        // --- FUNÇÃO DA API GEMINI (REMOVIDA) ---
-        // --- Função de espera (REMOVIDA) ---
-
-        // --- LÓGICA DE NAVEGAÇÃO E DADOS ---
         document.addEventListener('DOMContentLoaded', () => {
             const navLinks = document.querySelectorAll('.nav-link');
             const pageSections = document.querySelectorAll('.page-section');
             const pageTitle = document.getElementById('page-title');
 
-            // Função para trocar de página
             function showPage(pageId) {
                 pageSections.forEach(section => section.classList.remove('active'));
                 navLinks.forEach(link => {
@@ -305,7 +295,6 @@
                     pageTitle.textContent = activeLink.textContent;
                 }
 
-                // Carrega os dados específicos da página
                 if (pageId === 'page-locacoes') {
                     loadClientesDropdown();
                     loadVeiculosDropdown();
@@ -335,9 +324,8 @@
                 });
             });
 
-            // --- INICIALIZAÇÃO DO MAPA ---
             try {
-                map = L.map('map').setView([-22.2152, -49.9442], 13); // Pompéia, SP
+                map = L.map('map').setView([-22.2152, -49.9442], 13); 
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
                 }).addTo(map);
@@ -346,12 +334,9 @@
                 document.getElementById('map').innerHTML = "<p class='text-red-500 p-4'>Erro ao carregar o mapa.</p>";
             }
 
-            // --- LÓGICA DE VEÍCULOS (Sem Gemini) ---
             const formVeiculo = document.getElementById('form-add-veiculo');
             const tabelaVeiculos = document.getElementById('tabela-veiculos');
-            // Constantes da IA (REMOVIDAS)
 
-            // Carrega Veículos na Tabela
             async function loadVeiculos() {
                 try {
                     const response = await fetch(`${API_URL}/api/veiculos`);
@@ -388,7 +373,6 @@
                 }
             }
 
-            // Adiciona Veículo (com Descrição manual)
             formVeiculo.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const formData = new FormData(formVeiculo);
@@ -398,7 +382,7 @@
                     const response = await fetch(`${API_URL}/api/veiculos`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(dados) // 'dados' já inclui a 'descricao' do textarea
+                        body: JSON.stringify(dados) 
                     });
                     if (!response.ok) throw new Error('Erro ao salvar veículo');
                     
@@ -410,13 +394,9 @@
                 }
             });
 
-            // --- Event Listener do Botão GEMINI (REMOVIDO) ---
-
-            // --- LÓGICA DE CLIENTES ---
             const formCliente = document.getElementById('form-add-cliente');
             const tabelaClientes = document.getElementById('tabela-clientes');
 
-            // AQUI ESTÁ A MUDANÇA (FUNÇÃO loadClientes)
             async function loadClientes() {
                 try {
                     const response = await fetch(`${API_URL}/api/clientes`);
@@ -426,7 +406,6 @@
                     tabelaClientes.innerHTML = '';
                     clientes.forEach(c => {
                         const tr = document.createElement('tr');
-                        // Adicionada a coluna c.cnh
                         tr.innerHTML = `
                             <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">${c.id_cliente}</td>
                             <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">${c.nome}</td>
@@ -441,7 +420,6 @@
                     });
                 } catch (error) {
                     console.error("Falha ao carregar clientes:", error);
-                    // Colspan atualizado para 6
                     tabelaClientes.innerHTML = `<tr><td colspan="6" class="text-center p-4 text-red-500">Não foi possível carregar os clientes.</td></tr>`;
                 }
             }
@@ -467,8 +445,6 @@
                 }
             });
 
-            // --- LÓGICA DE LOCAÇÕES ---
-            // ... (Sem alterações) ...
             const formLocacao = document.getElementById('form-add-locacao');
             const tabelaLocacoes = document.getElementById('tabela-locacoes');
             const selectCliente = document.getElementById('locacao-cliente');
@@ -553,8 +529,6 @@
                 }
             }
 
-            // --- FUNÇÕES GLOBAIS DE AÇÕES ---
-            // ... (Sem alterações) ...
             window.deleteCliente = async (idCliente) => {
                 if (!confirm(`Tem certeza que deseja excluir o cliente ID ${idCliente}?`)) return;
                 try {
@@ -564,6 +538,7 @@
                     console.error("Erro ao excluir cliente:", error);
                 }
             };
+
             window.deleteVeiculo = async (idVeiculo) => {
                 if (!confirm(`Tem certeza que deseja excluir o veículo ID ${idVeiculo}?`)) return;
                 try {
@@ -573,6 +548,7 @@
                     console.error("Erro ao excluir veículo:", error);
                 }
             };
+            
             window.finalizarLocacao = async (idLocacao, idVeiculo) => {
                 if (!confirm(`Tem certeza que deseja finalizar a locação ID ${idLocacao}?`)) return;
                 try {
@@ -589,8 +565,6 @@
                 }
             };
             
-            // --- LÓGICA DO RASTREADOR (COM MAPA) ---
-            // ... (Sem alterações) ...
             const selectVeiculoRastreador = document.getElementById('rastreador-select-veiculo');
             const tabelaRastreador = document.getElementById('tabela-rastreador');
 
@@ -629,7 +603,6 @@
                     }
                 } catch (error) {
                         console.error("Erro ao buscar dados do veículo:", error);
-                        // CORRIGIDO PARA (colspan="3")
                         tabelaRastreador.innerHTML = `<tr><td colspan="3" class="text-center p-4 text-red-500">Erro ao buscar dados.</td></tr>`;
                 }
             });
@@ -677,10 +650,9 @@
                 }
             }
             
-            // Inicia na página de locações
             showPage('page-locacoes');
 
-        }); // Fim do DOMContentLoaded
+        }); 
     </script>
 </body>
 </html>
