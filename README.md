@@ -84,4 +84,4 @@ Você precisará de **dois terminais** abertos.
 1.  Abra um **novo terminal** (mantenha o primeiro rodando).
 2.  Execute o simulador de múltiplos veículos:
     ```
-    python
+    python simulador.py
