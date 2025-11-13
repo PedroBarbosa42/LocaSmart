@@ -10,7 +10,7 @@ O projeto se destaca pela funcionalidade de **Rastreamento de Frota**, que simul
 * **Gerenciamento de Veículos:** CRUD (Criar, Ler, Excluir) de veículos, com campo para descrição manual.
 * **Registro de Locações:** Permite registrar uma nova locação, vinculando um cliente a um veículo "Disponível" e alterando seu status para "Alugado".
 * **Rastreamento GPS em Tempo Real:** Uma aba "Rastreador" exibe um mapa interativo (com Leaflet.js) que mostra a última localização de qualquer veículo selecionado no dropdown.
-* **Simulador de Frota (Multi-Veículos):** Um script (`simulador.py`) que busca *toda* a frota de veículos na API e, em paralelo, envia novas coordenadas GPS para cada um deles, permitindo o monitoramento de múltiplos carros ao mesmo tempo.
+* **Simulador de Frota (Multi-Veículos):** Um script (`simulador.py`) que busca *toda* a frota de veículos na API e, em paralelo, envia novas coordenadas GPS para cada um deles, permitindo o monitoramento dos carros alugados.
 
 ## 🛠️ Tecnologias Utilizadas
 
